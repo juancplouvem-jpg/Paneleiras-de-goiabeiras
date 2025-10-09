@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz - Paneleiras de Goiabeiras</title>
+  <style>
+    body {
+      font-family: 'Trebuchet MS', sans-serif;
+      background: linear-gradient(160deg, #8B4513, #DEB887);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .quiz-container {
+      background: #f5f0e1;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      width: 90%;
+      max-width: 700px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #654321;
+      text-shadow: 1px 1px 2px #fff;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+    .options button, .restart-btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #DAA520;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .options button:hover, .restart-btn:hover {
+      background: #B8860B;
+      transform: scale(1.05);
+    }
+    .result {
+      font-size: 22px;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #222;
+    }
+    .explanation {
+      margin-top: 12px;
+      font-size: 16px;
+      color: #444;
+      animation: fadeIn 0.5s ease-in;
+    }
+    .quiz-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz: Paneleiras de Goiabeiras</h1>
+    <div id="quiz"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- Sons -->
+  <audio id="soundCorrect" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0ce3d9b6f3.mp3?filename=correct-2-46134.mp3"></audio>
+  <audio id="soundWrong" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_caf7bfa64a.mp3?filename=error-126627.mp3"></audio>
+  <audio id="soundWin" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d82f2e939c.mp3?filename=success-1-6297.mp3"></audio>
+
+  <script>
+    const quizData = [
+      {question:"Onde ficam as paneleiras de Goiabeiras?",image:"https://upload.wikimedia.org/wikipedia/commons/1/1c/Paneleiras_de_Goiabeiras.jpg",options:["São Paulo","Bahia","Vitória – Espírito Santo","Minas Gerais"],answer:2,explanation:"As paneleiras estão em Goiabeiras Velha, Vitória - ES."},
+      {question:"Qual é a principal matéria-prima usada pelas paneleiras?",image:"https://upload.wikimedia.org/wikipedia/commons/b/bc/Barro_paneleiras.jpg",options:["Madeira","Barro","Metal","Vidro"],answer:1,explanation:"As panelas são moldadas artesanalmente com barro."},
+      {question:"As panelas são usadas para preparar quais pratos típicos?",image:"https://upload.wikimedia.org/wikipedia/commons/8/89/Moqueca_capixaba.jpg",options:["Feijoada e acarajé","Vatapá e caruru","Moqueca e torta capixaba","Churrasco e arroz carreteiro"],answer:2,explanation:"As panelas são tradicionais na moqueca e torta capixaba."},
+      {question:"Qual produto natural dá a cor preta às panelas?",image:"https://upload.wikimedia.org/wikipedia/commons/3/3f/Casca_de_mangue.jpg",options:["Óleo de dendê","Tanino da casca de mangue","Açafrão","Carvão moído"],answer:1,explanation:"O tanino da casca de mangue impermeabiliza e dá a cor preta."},
+      {question:"Como as paneleiras secam suas panelas após o modelamento?",image:"https://upload.wikimedia.org/wikipedia/commons/5/50/Secagem_de_panelas_de_barro.jpg",options:["Ao sol","Em forno elétrico","Em micro-ondas","Na sombra por semanas"],answer:0,explanation:"As panelas são deixadas ao sol para secar naturalmente."},
+      {question:"Qual ferramenta é usada para alisar as panelas?",image:"https://upload.wikimedia.org/wikipedia/commons/2/2b/Pedra_de_rio_paneleiras.jpg",options:["Martelo","Pedra de rio","Lixa","Espátula metálica"],answer:1,explanation:"As paneleiras utilizam uma pedra de rio para alisar o barro."},
+      {question:"Qual prato é símbolo da gastronomia capixaba feito na panela de barro?",image:"https://upload.wikimedia.org/wikipedia/commons/d/d0/Moqueca_capixaba_prato.jpg",options:["Moqueca capixaba","Feijoada","Bobó de camarão","Tutu de feijão"],answer:0,explanation:"A moqueca capixaba é o prato símbolo da culinária do Espírito Santo."},
+      {question:"Qual instituição reconheceu o ofício das paneleiras como patrimônio cultural?",image:"https://upload.wikimedia.org/wikipedia/commons/5/5f/Iphan_logo.png",options:["UNESCO","IPHAN","IBGE","FUNAI"],answer:1,explanation:"O IPHAN reconheceu as Paneleiras de Goiabeiras como Patrimônio Cultural Imaterial do Brasil."},
+      {question:"As paneleiras transmitem seu conhecimento principalmente por:",image:"https://upload.wikimedia.org/wikipedia/commons/8/88/Oficina_paneleiras.jpg",options:["Livros técnicos","Cursos universitários","Tradição oral e prática entre gerações","Internet e vídeos"],answer:2,explanation:"O saber é passado de mãe para filha, oralmente e na prática."},
+      {question:"Qual evento celebra e divulga o trabalho das paneleiras em Vitória?",image:"https://upload.wikimedia.org/wikipedia/commons/f/f4/Feira_de_artesanato_ES.jpg",options:["Feira da Moqueca","Festival Capixaba da Panela de Barro","Semana do Folclore","Feira do Barro e da Pesca"],answer:1,explanation:"O Festival Capixaba da Panela de Barro celebra a cultura das paneleiras."}
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const quizContainer = document.getElementById("quiz");
+
+    const soundCorrect = document.getElementById("soundCorrect");
+    const soundWrong = document.getElementById("soundWrong");
+    const soundWin = document.getElementById("soundWin");
+
+    function loadQuestion() {
+      if(currentQuestion < quizData.length){
+        const q = quizData[currentQuestion];
+        quizContainer.innerHTML = `
+          <img src="${q.image}" alt="Imagem da questão" class="quiz-img">
+          <div class="question">${q.question}</div>
+          <div class="options">
+            ${q.options.map((opt,i)=>`<button onclick="checkAnswer(${i})">${opt}</button>`).join('')}
+          </div>`;
+      } else {
+        soundWin.play();
+        quizContainer.innerHTML = `
+          <div class="result">🎉 Você acertou ${score} de ${quizData.length} perguntas!</div>
+          <button class="restart-btn" onclick="restartQuiz()">🔄 Recomeçar o Quiz</button>`;
+      }
+    }
+
+    function checkAnswer(selected){
+      const q = quizData[currentQuestion];
+      if(selected===q.answer){
+        score++;
+        soundCorrect.play();
+      } else {
+        soundWrong.play();
+      }
+      quizContainer.innerHTML += `<p class='explanation'>${selected===q.answer?'✅ Correto!':'❌ Errado!'} ${q.explanation}</p>`;
+      setTimeout(()=>{currentQuestion++; loadQuestion();},2500);
+    }
+
+    function restartQuiz(){currentQuestion=0; score=0; loadQuestion();}
+    loadQuestion();
+  </script>
+</body>
+</html>
